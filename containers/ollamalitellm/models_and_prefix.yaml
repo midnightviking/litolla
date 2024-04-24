@@ -3,6 +3,18 @@ models:
     prefix: 'ollama_chat'
     port: '4101'
 
+  - name: 'phi3'
+    prefix: 'ollama_chat'
+    port: '4114'
+
+  - name: 'dolphin-llama3'
+    prefix: 'ollama_chat'
+    port: '4115'
+
+  - name: 'codeqwen'
+    prefix: 'ollama_chat'
+    port: '4116'
+
   - name: 'llama2'
     prefix: 'ollama_chat'
     port: '4102'
