@@ -1,0 +1,271 @@
+/* muh reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+p {
+  max-width: 72ch;
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+#root, #__next {
+  isolation: isolate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transition-delay: 0.01ms !important;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    scroll-behavior: smooth;
+  }
+  :has(:target) {
+    scroll-behavior: smooth;
+    scroll-padding-top: 3rem;
+  }
+}
+/* ----------------------------------- */
+/* styles */
+body {
+  background: #222;
+  color: #efefef;
+  font-family: "Courier New", Courier, monospace;
+  line-height: 1.8rem;
+}
+
+h1, h2 {
+  color: orangered;
+  color: rgb(209, 204, 129);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+hr {
+  margin: 1em 0;
+}
+
+input[type=radio] {
+  margin-right: 1rem;
+}
+
+button {
+  background: rgb(60, 84, 131);
+  border: 1px solid #efefef;
+  color: #efefef;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+button:hover {
+  background: #efefef;
+  color: #222;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  margin: auto;
+  max-width: 1200px;
+}
+.container .inner-container {
+  border-bottom: #efefef 1px solid;
+  padding: 1rem 0;
+}
+.container #selectModel {
+  margin: 1rem 0;
+  padding: 0.4rem 1rem;
+  max-width: 300px;
+  width: 100%;
+}
+.container ul.model-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.container ul.model-list li {
+  padding: 0.5rem;
+  transition: all 0.2s ease-in;
+}
+.container ul.model-list li label {
+  display: grid;
+  grid-template-columns: 50px 1fr 1fr;
+  grid-template-areas: "radio name status" "radio more more";
+  align-items: center;
+  flex-direction: row;
+  cursor: pointer;
+}
+.container ul.model-list li label:last-child {
+  border-bottom: none;
+}
+.container ul.model-list li label .radio-button {
+  grid-area: radio;
+  font-size: 0.9rem;
+}
+.container ul.model-list li label .model-name {
+  grid-area: name;
+  font-size: 1.3rem;
+}
+.container ul.model-list li label .status {
+  grid-area: status;
+  text-align: right;
+}
+.container ul.model-list li label .more-info {
+  grid-area: more;
+  color: rgb(209, 204, 129);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+@media (max-width: 768px) {
+  .container ul.model-list li label .more-info {
+    flex-direction: column;
+  }
+}
+.container ul.model-list li:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+.container ul.model-list .running {
+  background: rgba(0, 200, 0, 0.3);
+}
+.container ul.model-list .model-running {
+  display: flex;
+  flex-direction: row;
+}
+.container ul.model-list .selected-model {
+  border-bottom: 1px solid rgb(105, 150, 238);
+}
+.container ul.model-list .selected-model:hover {
+  background: rgb(31, 43, 68);
+}
+
+.selected-model-box {
+  border: 2px solid;
+  padding: 1.2rem;
+  margin: 1em 0;
+  background: coral;
+  color: black;
+  font-weight: bold;
+}
+
+.model-list {
+  margin: 1rem 0;
+}
+
+.status-container {
+  margin-top: 2rem;
+  padding: 1rem 0;
+}
+.status-container ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.status-container ul li {
+  display: flex;
+  flex-direction: row;
+  padding: 0.5rem;
+}
+.status-container ul .service {
+  color: white;
+  background: rgba(200, 0, 0, 0.3);
+}
+.status-container ul .service.on {
+  color: white;
+  background: rgba(0, 200, 0, 0.3);
+}
+.status-container ul .service .status {
+  margin-left: 1rem;
+}
+
+/* ----------------------------------- */
+/* Download progress bar */
+.toast {
+  display: none;
+  position: relative;
+}
+.toast .to-download {
+  padding: 0.25em 1em;
+  background: rgb(15, 92, 85);
+  position: relative;
+  padding: 10px;
+}
+.toast .to-download span {
+  position: relative;
+  display: inline-block;
+  padding: 3px;
+  font-size: 14px;
+  z-index: 2;
+}
+.toast .to-download .status {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.toast .to-download .progress-dl {
+  background: rgb(10, 63, 59);
+  height: 10px;
+  position: relative;
+  border-radius: 100vw;
+  overflow: hidden;
+  border-top: 1px solid #222;
+  border-bottom: 1px solid #888;
+}
+.toast .to-download .progress-dl::after {
+  position: relative;
+  display: block;
+  content: "";
+  width: 100%;
+  height: 10px;
+  background: #777;
+  background-position: 0 0;
+  background-size: 300% 100%;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 20px, #999 20px, #999 40px);
+  animation: progressb 40s infinite linear;
+}
+.toast .to-download .progress-bar {
+  position: absolute;
+  width: 0%;
+  background: rgb(14, 167, 255);
+  height: 10px;
+  z-index: 3;
+  transition: width 0.2s ease-in;
+}
+
+@keyframes progressb {
+  to {
+    background-position-x: 100%;
+  }
+}/*# sourceMappingURL=adminstyles.css.map */

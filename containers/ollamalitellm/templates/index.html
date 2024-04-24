@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ollama Model Select</title>
+	<link href="{{ url_for('static', filename='adminstyles.css') }}" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+	<div class="container">
+		<div class="inner-container">
+			<h1>Ollama Model Select</h1>
+			
+				<p>Choose a model to use:</p>
+				<ul class="model-list">
+					<li>Loading models...</li>
+				</ul>
+				<button id="selectModel" class="button">Select</button>
+			</div>
+			<div class="status-container">
+				<h2>Status</h2>
+				<ul class="status-list">
+					<li class="service model-selection {% if data.selectedModel %} on {% endif %}"><strong>Model  : </strong> <span class="status">{{ data.selectedModel }}</span></li>
+					<li class="service ollama "><strong>Ollama : </strong> <span class="status"></span> </li>
+					<li class="service litellm "><strong>LiteLLM: </strong><span class="status"></span> </li>
+				</ul>
+			</div>
+		</div>
+		<div class="toast" id="toast-model-download">
+			<div class="to-download">
+				<span class="status">
+					<span class="currtext">
+						Downloading model...
+					</span>
+					<span class="percent">0%</span>
+				</span>
+				<div class="progress-dl">
+					<div class="progress-bar"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="/static/socket.io.min.js"></script>
+	<script>
+		//Toast element
+		const toastElement               = document.querySelector('#toast-model-download');
+		const toastElementStatus         = toastElement.querySelector('.status');
+		const toastElementPercent        = toastElement.querySelector('.percent');
+		const toastElementCurrText       = toastElement.querySelector('.currtext');
+		const progressElement            = toastElement.querySelector('.progress-bar');
+		      toastElement.style.display = 'none';
+		let   bread                      = true;
+
+
+		//Socket connection
+		const socket = io();
+		socket.on('connect', () => {console.log('Connected to server');	});
+
+		socket.on('model-download', (msg) => {
+			const selectedModelElement = document.querySelector('.model-list li[data-model="' + msg.model + '"] ');
+			if(bread){
+				if(selectedModelElement === null) return;
+				selectedModelElement.appendChild(toastElement);
+				toastElement.style.display = 'block';
+				progressElement.style.width = '0%';
+				toastElementCurrText.innerText = msg.data.status + '...';
+				bread = false;
+			}else{
+				toastElementCurrText.innerText = msg.data.status + '...';
+				toastElementPercent.innerText  = msg.progress;
+				progressElement.style.width    = msg.progress;
+			}
+			if(msg.size && msg.size !="" && selectedModelElement){
+				setSize(selectedModelElement, msg.size);
+			}
+
+			if(msg.data.status === 'success') {
+				toastElement.style.display = 'none';
+				progressElement.style.width = '0%';
+				bread = true;
+				return;
+			}
+		});
+
+		socket.on('disconnect', () => {
+			console.log('Disconnected from server');
+		});
+
+		socket.on('model-update', (msg) => {
+			console.log('Model update:', msg);
+			updateModels(msg);
+		});
+
+		socket.on('model-proxy-error', (msg) => {
+			console.error('Model proxy error:', msg);
+		});
+
+		socket.on('model-proxy', (msg) => {
+			console.log('Model proxy:', msg);
+		});
+
+		function setSize(selectedModelElement, size) {
+			let sizeNode = selectedModelElement.querySelector('.modelsize');
+			if (sizeNode === null) {
+				sizeNode = document.createElement('span');
+				sizeNode.classList.add('modelsize');
+				selectedModelElement.appendChild(sizeNode);
+			}
+			sizeNode.innerText = size;
+		}
+
+		function formatServiceStatus(selector, status, text = "") {
+			var statEl = document.querySelector(selector);
+			if (status === 1) {
+				statEl.classList.add('on');
+				statEl.querySelector('.status').innerText = text === "" ? 'ON': text;
+			} else {
+				statEl.classList.remove('on');
+				statEl.querySelector('.status').innerText = 'OFF';
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', function() {
+			updateModels();
+			//setup the selection button
+			document.getElementById('selectModel').addEventListener('click', (e)=> {
+				var selectedModel = document.querySelector('input[name="model"]:checked').value;
+				fetch('/model/' + selectedModel, {
+					method: 'POST'
+				})
+				.then(response => response.json())
+				.then(data => {
+					if(data.error) {
+						console.log(data.error);
+						return;
+					}
+					//wipe previous selection
+					document.querySelectorAll('.model-list li.selected-model').forEach(el =>el.classList.remove('selected-model'));
+					//set new selection
+					const sel = document.querySelector('.model-list li[data-model="' + data.name + '"]')
+					sel.classList.add('selected-model');
+					setSize(sel, data.size);
+					//update status
+					formatServiceStatus('.service.model-selection', 1, data.name);
+				});
+			});
+
+			fetch('/service-request')
+				.then(response => response.json())
+				.then(status => {
+					formatServiceStatus('.service.ollama', status.ollama);
+					formatServiceStatus('.service.litellm', status.liteLLM);
+					if (status.model) {
+						formatServiceStatus('.service.model-selection', 1, status.model);
+					}
+				})
+				.catch(error => {
+					console.error('Failed to fetch service status', error);
+				});
+		});
+		//use this to create the initial list too so I can pivot to node from Flask
+		async function updateModels(_data = null) {
+			data = _data;
+			if(!_data){
+				console.log('fetching models');
+				await fetch('/models')
+					.then(response => response.json())
+					.then(data => updateModels(data))
+					.catch(error => {
+						// Handle any errors here
+						console.error('Failed to fetch models', error);
+						return false;
+					});
+			}
+			if(!data) return false;
+			//clear items
+			const modelList = document.querySelector('.model-list');
+			modelList.innerHTML = '';
+			//add items
+			let selected = data.selectedModel ? data.selectedModel : '';
+			data.models.forEach(model => {
+				const li = document.createElement('li');
+				if(model.name === selected) {
+					li.classList.add('selected-model');
+				}
+				if(model.running) {
+					li.classList.add('running');
+				}
+
+				li.dataset.model = model.name;
+				let running = model.running ? '<span class="model-running"><img src="static/icons/server_icon.svg" alt="" width="24px" />&nbsp; Running on </span>' : '';
+				li.innerHTML = `
+					<label>
+						<div class="radio-button">
+							<input type="radio" name="model" value="${model.name}" ${model.name === selected ? "checked" : ''} >
+						</div>
+						<div class="model-name">
+							${model.name}
+						</div>
+						<div class="status">
+							${model.size ? '<span class="modelsize">&nbsp; ' + model.size + '</span>' : ''}
+						</div>
+						<div class="more-info">
+							${model.port ? running + '<span class="model-port">url: http://ollamalitellm:'+model.port+'</span>':''}
+						</div>
+					</label>
+				`;
+				modelList.appendChild(li);
+			});
+		}
+
+	</script>
+</body>
+
+</html>

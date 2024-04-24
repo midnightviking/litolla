@@ -1,0 +1,52 @@
+models:
+  - name: 'llama3'
+    prefix: 'ollama_chat'
+    port: '4101'
+
+  - name: 'llama2'
+    prefix: 'ollama_chat'
+    port: '4102'
+
+  - name: 'mistral'
+    prefix: 'ollama_chat'
+    port: '4103'
+
+  - name: 'codellama'
+    prefix: 'ollama_chat'
+    port: '4104'
+
+  - name: 'llama2-uncensored'
+    prefix: 'ollama_chat'
+    port: '4105'
+
+  - name: 'dolphin-phi'
+    prefix: 'ollama_chat'
+    port: '4106'
+
+  - name: 'dolphin-mistral'
+    prefix: 'ollama_chat'
+    port: '4107'
+
+  - name: 'zephyr'
+    prefix: 'ollama_chat'
+    port: '4108'
+
+  - name: 'samantha-mistral'
+    prefix: 'ollama_chat'
+    port: '4109'
+
+  - name: 'openchat'
+    prefix: 'ollama_chat'
+    port: '4110'
+
+  - name: 'neural-chat'
+    prefix: 'ollama_chat'
+    port: '4111'
+
+  - name: 'wizardcoder'
+    prefix: 'ollama_chat'
+    port: '4112'
+
+  - name: 'mixtral'
+    prefix: 'ollama_chat'
+    port: '4113'

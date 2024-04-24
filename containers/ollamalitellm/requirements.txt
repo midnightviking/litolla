@@ -1,0 +1,12 @@
+ollama
+openai
+pyyaml
+flask
+requests
+flask[async]
+click
+flask-socketio
+flask-cors
+litellm
+litellm[proxy]
+pymongo

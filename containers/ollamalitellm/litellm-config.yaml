@@ -1,0 +1,40 @@
+model_list:
+  - model_name: gpt-3.5-turbo ### RECEIVED MODEL NAME ###
+    litellm_params: # all params accepted by litellm.completion() - https://docs.litellm.ai/docs/completion/input
+      model: azure/gpt-turbo-small-eu ### MODEL NAME sent to `litellm.completion()` ###
+      api_base: https://my-endpoint-europe-berri-992.openai.azure.com/
+      api_key: "os.environ/AZURE_API_KEY_EU" # does os.getenv("AZURE_API_KEY_EU")
+      rpm: 6      # [OPTIONAL] Rate limit for this deployment: in requests per minute (rpm)
+  - model_name: bedrock-claude-v1 
+    litellm_params:
+      model: bedrock/anthropic.claude-instant-v1
+  - model_name: gpt-3.5-turbo
+    litellm_params:
+      model: azure/gpt-turbo-small-ca
+      api_base: https://my-endpoint-canada-berri992.openai.azure.com/
+      api_key: "os.environ/AZURE_API_KEY_CA"
+      rpm: 6
+  - model_name: anthropic-claude
+    litellm_params: 
+      model: bedrock/anthropic.claude-instant-v1
+      ### [OPTIONAL] SET AWS REGION ###
+      aws_region_name: us-east-1
+  - model_name: vllm-models
+    litellm_params:
+      model: openai/facebook/opt-125m # the `openai/` prefix tells litellm it's openai compatible
+      api_base: http://0.0.0.0:4000
+      rpm: 1440
+  - model_name: dolphin-phi
+      litellm_params:
+        model: ollama_chat/dolphin-phi
+        api_base: http://0.0.0.0:4000
+
+    model_info:
+      version: 2
+
+litellm_settings: # module level litellm settings - https://github.com/BerriAI/litellm/blob/main/litellm/__init__.py
+  drop_params: True
+
+general_settings:
+  store_model_in_db: True
+  #master_key: sk-1234 # [OPTIONAL] Only use this if you to require all calls to contain this key (Authorization: Bearer sk-1234)

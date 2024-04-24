@@ -1,0 +1,279 @@
+/* muh reset */
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+
+* {
+	margin: 0;
+}
+
+body {
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+}
+
+img, picture, video, canvas, svg {
+	display: block;
+	max-width: 100%;
+}
+
+input, button, textarea, select {
+	font: inherit;
+}
+
+p {
+	max-width: 72ch;
+	text-wrap: pretty;
+	overflow-wrap: break-word;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	overflow-wrap: break-word;
+	text-wrap: balance;
+}
+
+#root, #__next {
+	isolation: isolate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+		transition-delay: 0.01ms !important;
+	}
+	}
+	@media (prefers-reduced-motion: no-preference) {
+	:root {
+		scroll-behavior: smooth;
+	}
+	:has(:target) {
+		scroll-behavior: smooth;
+		scroll-padding-top: 3rem;
+	}
+}
+/* ----------------------------------- */
+$primary-color:rgb(209 204 129);
+$secondary-color:rgb(60 84 131);
+/* styles */
+body{
+	background:#222;
+	color:#efefef;
+	font-family: 'Courier New', Courier, monospace;
+	line-height: 1.8rem;
+}
+
+h1,h2{
+	color:orangered;
+	color:$primary-color;
+	font-weight:bold;
+	margin-bottom:0.5rem;
+}
+
+hr{
+	margin:1em 0;
+}
+
+input[type="radio"]{
+	margin-right:1rem;
+}
+
+button{
+	background:$secondary-color;
+	border:1px solid #efefef;
+	color:#efefef;
+	padding:0.5rem 1rem;
+	cursor:pointer;
+	&:hover{
+		background:#efefef;
+		color:#222;
+	}
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	padding:2rem;
+	margin:auto;
+	max-width: 1200px;
+	.inner-container{
+		border-bottom:#efefef 1px solid;
+		padding:1rem 0;
+	}
+	#selectModel{
+		margin:1rem 0;
+		padding: 0.4rem 1rem;
+		max-width: 300px;
+		width:100%;
+	}
+	ul.model-list{
+		padding:0;
+		margin:0;
+		list-style:none;
+		li{
+			label{
+				display:grid;
+				grid-template-columns: 50px 1fr 1fr;
+				grid-template-areas: "radio name status"
+									 "radio more more";
+				align-items: center;
+				flex-direction: row;
+				cursor: pointer;
+				&:last-child{
+					border-bottom:none;
+				}
+				.radio-button{
+					grid-area: radio;
+					font-size:0.9rem;
+				}
+				.model-name{
+					grid-area: name;
+					font-size:1.3rem;
+				}
+				.status{
+					grid-area: status;
+					text-align: right;
+				}
+				.more-info{
+					grid-area: more;
+					color:$primary-color;
+					display: flex;
+					flex-direction: row;
+					flex-wrap: wrap;
+					gap:10px;
+					@media (max-width: 768px) {
+						flex-direction: column;
+					}
+				}
+			}
+			padding:0.5rem;
+			&:hover{
+				background:rgba(0, 0, 0, 0.3);
+			}
+			transition: all 0.2s ease-in;
+		}
+		.running{
+			background:rgba(0, 200, 0, 0.3);
+		}
+		.model-running{
+			display: flex;
+			flex-direction: row;
+		}
+		.selected-model{
+			// background:$secondary-color;
+			border-bottom:1px solid rgb(105, 150, 238);
+			&:hover{
+				background:rgb(31, 43, 68);
+			}
+		}
+	}
+}
+.selected-model-box {
+	border: 2px solid;
+	padding: 1.2rem;
+	margin: 1em 0;
+	background: coral;
+	color: black;
+	font-weight: bold;
+}
+.model-list{
+	margin:1rem 0;
+}
+.status-container{
+		margin-top:2rem;
+		padding: 1rem 0;
+	ul{
+		padding:0;
+		margin:0;
+		list-style:none;
+		li{
+			display:flex;
+			flex-direction: row;
+			padding:0.5rem
+		}
+		.service{
+			color:white;
+			background:rgba(200, 0, 0, 0.3);
+			&.on{
+				color:white;
+				background:rgba(0, 200, 0, 0.3);
+			}
+			.status{
+				margin-left:1rem;
+			}
+			
+		}
+	}
+
+}
+
+/* ----------------------------------- */
+/* Download progress bar */
+
+.toast{
+	$background-color: rgb(15, 92, 85);
+	$progress-background-color: rgb(10, 63, 59);
+	$progress-bar-background-color: #777;
+	$progress-bar-gradient: repeating-linear-gradient(45deg, transparent, transparent 20px, #999 20px, #999 40px);
+	$progress-bar-animation-duration: 40s;
+	$progress-bar-height: 10px;
+	display: none;
+	position:relative;
+	.to-download {
+		padding: .25em 1em;
+		background: $background-color;
+		position: relative;
+		padding:10px;
+		span {
+			position: relative;
+			display: inline-block;
+			padding: 3px;
+			font-size:14px;
+			z-index: 2;
+			// background: #222;
+		}
+		.status{
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+		}
+		.progress-dl {
+			background: $progress-background-color;
+			height: $progress-bar-height;
+			position: relative;
+			border-radius: 100vw;
+			overflow: hidden;
+			border-top: 1px solid #222;
+			border-bottom: 1px solid #888;
+			&::after {
+				position: relative;
+				display: block;
+				content: '';
+				width: 100%;
+				height: $progress-bar-height;
+				background: $progress-bar-background-color;
+				background-position: 0 0;
+				background-size: 300% 100%;
+				background-image: $progress-bar-gradient;
+				animation: progressb $progress-bar-animation-duration infinite linear;
+			}
+		}
+		.progress-bar{
+			position:absolute;
+			width:0%;
+			background:rgb(14, 167, 255);
+			height:$progress-bar-height;
+			z-index:3;
+			transition: width 0.2s ease-in;
+		}
+	}
+}
+@keyframes progressb {
+    to{
+        background-position-x: 100%;
+    }
+}
